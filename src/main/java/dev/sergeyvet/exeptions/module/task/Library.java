@@ -1,7 +1,7 @@
 package dev.sergeyvet.exeptions.module.task;
 
-import dev.sergeyvet.exeptions.module.task.exeptions.BookNotFoundException;
-import dev.sergeyvet.exeptions.module.task.exeptions.NoAvailableCopiesException;
+import dev.sergeyvet.exeptions.module.task.exceptions.BookNotFoundException;
+import dev.sergeyvet.exeptions.module.task.exceptions.NoAvailableCopiesException;
 
 import java.util.ArrayList;
 import java.util.List;
