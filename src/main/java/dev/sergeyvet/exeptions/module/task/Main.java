@@ -10,67 +10,61 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
 
-        Scanner scanner = new Scanner(System.in);
         Random random = new Random();
         Library library = new Library();
 
         //заполнение библиотеки книгами
         for (int i = 0; i < 10; i++) {
-            library.addBook(new Book("title" + i,
+            library.addBook("title" + i,
                     "author" + i,
-                    random.nextInt(0,3)));
+                    random.nextInt(0,3));
         }
 
 
-        while (true){
-            try {
-                System.out.print("введите номер действия (0 - показать действия): ");
-                int userChose = scanner.nextInt();
-                scanner.nextLine();
+        try (Scanner scanner = new Scanner(System.in)) {
+            while (true){
+                try {
+                    printActions();
+                    int userChose = readIntegerInput(scanner, "введите номер действия: ");
 
-                switch (userChose){
-                    case 0 -> printActions();
-                    case 1 -> library.printBooks();
-                    case 2 -> {
-                        System.out.print("введите название книги: ");
-                        String title = scanner.nextLine();
+                    switch (userChose){
+                        case 1 -> library.printBooks();
+                        case 2 -> {
+                            System.out.print("введите название книги: ");
+                            String title = scanner.nextLine();
 
-                        System.out.print("введите автора: ");
-                        String author = scanner.nextLine();
+                            System.out.print("введите автора: ");
+                            String author = scanner.nextLine();
 
-                        System.out.print("введите кол-во копий: ");
-                        int availableCopies = scanner.nextInt();
-                        scanner.nextLine();
+                            int copies = readIntegerInput(scanner, "введите кол-во копий: ");
 
-                        library.addBook(new Book(title, author, availableCopies));
-                        System.out.println("книга успешно добавлена");
+                            library.addBook(title, author, copies);
+                            System.out.println("книга успешно добавлена");
+
+                        }
+                        case 3 -> {
+                            System.out.print("введите название книги: ");
+                            String title = scanner.nextLine();
+                            library.takeBook(title);
+
+                        }
+                        case 4 -> {
+                            System.out.print("введите название книги: ");
+                            String title = scanner.nextLine();
+                            library.returnBook(title);
+
+                        }
+                        case 5 -> {
+                            System.out.println("завершение программы");
+                            return;
+                        }
+                        default -> System.out.println("неизвестная команда");
 
                     }
-                    case 3 -> {
-                        System.out.print("введите название книги: ");
-                        String title = scanner.nextLine();
-                        library.takeBook(title);
 
-                    }
-                    case 4 -> {
-                        System.out.print("введите название книги: ");
-                        String title = scanner.nextLine();
-                        library.returnBook(title);
-
-                    }
-                    case 5 -> {
-                        System.out.println("завершение программы");
-                        return;
-                    }
-                    default -> System.out.println("неизвестная команда");
-
+                }catch (BookNotFoundException | NoAvailableCopiesException | IllegalArgumentException e) {
+                    System.out.println("ошибка: " + e.getMessage());
                 }
-
-            }catch (BookNotFoundException | NoAvailableCopiesException e) {
-                System.out.println("ошибка: " + e.getMessage());
-            }catch (InputMismatchException e) {
-                System.out.println("ошибка ввода");
-                scanner.nextLine();
             }
         }
     }
@@ -81,6 +75,20 @@ public class Main {
                 "3. Выдать книгу.\n" +
                 "4. Вернуть книгу.\n" +
                 "5. Выйти из приложения.\n");
+    }
+
+    public static int readIntegerInput(Scanner scanner, String promt){
+        while (true){
+            try {
+                System.out.print(promt);
+                int num = scanner.nextInt();
+                scanner.nextLine();
+                return num;
+            } catch (InputMismatchException e) {
+                System.out.println("ошибка: ввод должен быть целым числом, попробуйте еще раз");
+                scanner.nextLine();
+            }
+        }
     }
 
 }

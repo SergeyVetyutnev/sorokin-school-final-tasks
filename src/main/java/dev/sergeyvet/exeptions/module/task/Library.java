@@ -5,23 +5,38 @@ import dev.sergeyvet.exeptions.module.task.exceptions.NoAvailableCopiesException
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class Library {
     private final List<Book> catalog = new ArrayList<>();
 
     public void printBooks(){
-        catalog.forEach(book -> System.out.println(book.toString()));
+        catalog.forEach(book -> System.out.println(book));
+    }
+    public List<Book> getAllBooks(){
+        return catalog;
     }
 
-    public void addBook(Book book){
+    public void addBook(String title, String author, int copies){
+
+        if (title == null || title.trim().isEmpty()){
+            throw new IllegalArgumentException("название книги не должно быть пустым");
+        }
+        if (author == null || author.trim().isEmpty()){
+            throw new IllegalArgumentException("имя автора не должно быть пустым");
+        }
+        if (copies < 0){
+            throw new IllegalArgumentException("количество книг не может быть меньше 0");
+        }
+
+        Book book = new Book(title, author, copies);
         catalog.add(book);
     }
 
     public void takeBook(String title){
-        Book book = findBookByTitle(title);
-        if (book == null){
-            throw new BookNotFoundException(String.format("книга '%s' не найдена", title));
-        }
+        Book book = findBookByTitle(title).
+                orElseThrow(() ->new BookNotFoundException(String.format("книга '%s' не найдена", title)));
+
         int availableCopies = book.getAvailableCopies();
         if (availableCopies <= 0){
             throw new  NoAvailableCopiesException(String.format("не удалось взять книгу '%s' доступных копий '%d'",
@@ -33,21 +48,24 @@ public class Library {
     }
 
     public void returnBook(String title){
-        Book book = findBookByTitle(title);
-        if (book == null){
-            throw new BookNotFoundException(String.format("книга '%s' не найдена", title));
-        }
+        Book book = findBookByTitle(title).
+                orElseThrow(() ->new BookNotFoundException(String.format("книга '%s' не найдена", title)));
+
         book.setAvailableCopies(book.getAvailableCopies() + 1);
         System.out.println("Книга успешно возвращена");
     }
 
-    private Book findBookByTitle(String title){
+    private Optional<Book> findBookByTitle(String title){
+
+        if (title == null || title.trim().isEmpty()) {
+            throw new IllegalArgumentException("название книги для поиска не может быть пустым");
+        }
+
         for (Book book: catalog) {
             if (book.getTitle().equals(title)){
-                return book;
+                return Optional.of(book);
             }
         }
-        return null;
+        return Optional.empty();
     }
-
 }
