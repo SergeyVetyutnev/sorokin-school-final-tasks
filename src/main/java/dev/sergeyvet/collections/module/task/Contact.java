@@ -22,8 +22,7 @@ public class Contact {
         if (obj == null || getClass() != obj.getClass()) return false;
 
         Contact contact = (Contact) obj;
-        return Objects.equals(phone, contact.phone) &&
-                Objects.equals(email, contact.email);
+        return Objects.equals(phone, contact.phone);
     }
 
     @Override

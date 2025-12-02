@@ -7,9 +7,15 @@ import dev.sergeyvet.collections.module.task.exceptions.InvalidContactDataExcept
 import java.util.*;
 
 public class ContactBook {
-    List<Contact> contactsInOrder = new ArrayList<>();
-    Set<Contact> uniqueContacts = new HashSet<>();
-    Map<String, List<Contact>> contactsByGroup = new HashMap<>();
+    private final List<Contact> contactsInOrder;
+    private final Set<Contact> uniqueContacts;
+    private final Map<String, List<Contact>> contactsByGroup;
+
+    public ContactBook (){
+        this.contactsInOrder = new ArrayList<>();
+        this.uniqueContacts = new HashSet<>();
+        this.contactsByGroup = new HashMap<>();
+    }
 
 
 
@@ -29,22 +35,19 @@ public class ContactBook {
         Contact contact = new Contact(name, phone, email, group);
 
 
-        if (uniqueContacts.contains(contact)){
+        if (!uniqueContacts.add(contact)){
             throw new ContactAlreadyExistException("такой контакт уже есть");
         }
 
         contactsInOrder.add(contact);
-        uniqueContacts.add(contact);
 
         contactsByGroup.computeIfAbsent(group, k -> new ArrayList<>()).add(contact);
-
-        System.out.println("контакт добавлен " + contact);
     }
 
     public void deleteContact (String phone){
         Contact contactToRemove = null;
         for (Contact contact : contactsInOrder){
-            if (contact.getPhone().equals(phone)){
+            if (Objects.equals(contact.getPhone(), phone)){
                 contactToRemove = contact;
                 System.out.println("удален контакт с номером " + phone);
                 break;
@@ -59,12 +62,15 @@ public class ContactBook {
 
         String group = contactToRemove.getGroup();
         List<Contact> groupContacts = contactsByGroup.get(group);
+
         if (groupContacts != null){
             groupContacts.remove(contactToRemove);
+
+            if (groupContacts.isEmpty()){
+                contactsByGroup.remove(group);
+            }
         }
-        if (groupContacts.isEmpty()){
-            contactsByGroup.remove(group);
-        }
+
     }
 
     public void printContacts(){

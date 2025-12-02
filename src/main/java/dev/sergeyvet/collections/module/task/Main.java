@@ -42,6 +42,7 @@ public class Main {
                             String group = scanner.nextLine();
 
                             contactBook.addContact(name, phone, email, group);
+                            System.out.println("контакт добавлен");
                         }
                         case 2 -> {
                             System.out.print("введите номер: ");
